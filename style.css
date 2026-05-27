@@ -1,0 +1,589 @@
+/* ════════════════════════════════════════════════════════════
+   DUNGEON CRAWLER — style.css
+   ────────────────────────────────────────────────────────────
+   VISUAL GUIDE:
+   Every game object has its own clearly labelled section.
+   To change how something looks, find its section below.
+   ════════════════════════════════════════════════════════════ */
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ════════════════════════════════════════
+   PAGE BACKGROUND
+   Change body background to alter the
+   colour surrounding the game viewport.
+   ════════════════════════════════════════ */
+body {
+  background: #0a0005;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  font-family: 'Courier New', Courier, monospace;
+  overflow: hidden;
+  padding-top: 10px;
+}
+
+/* ════════════════════════════════════════
+   HUD BAR
+   The top info bar showing HP, gold, etc.
+   Adjust font sizes, colours, and spacing here.
+   ════════════════════════════════════════ */
+#hud {
+  width: 640px;
+  height: 44px;
+  background: linear-gradient(180deg, #1c0d00, #2e1800);
+  border: 2px solid #8b4513;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 14px;
+  z-index: 10;
+}
+
+#hud-left, #hud-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+#hud span, #hud-level-label {
+  color: #e8c87a;        /* ← HUD text colour */
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-shadow: 0 0 6px #a0600088;
+}
+
+/* Health bar container */
+#health-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#health-bar-bg {
+  width: 100px;
+  height: 12px;
+  background: #3a0000;   /* ← empty health bar colour */
+  border: 1px solid #8b4513;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+#health-bar {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #c0392b, #e74c3c); /* ← health bar fill colour */
+  border-radius: 3px;
+  transition: width 0.2s ease;
+}
+
+/* ════════════════════════════════════════
+   GAME VIEWPORT
+   The visible window into the dungeon.
+   Width/height = how many tiles are visible.
+   Each tile is 32×32px, viewport = 20×18 tiles = 640×576px.
+   ════════════════════════════════════════ */
+#game-viewport {
+  width: 640px;
+  height: 576px;
+  overflow: hidden;
+  border: 2px solid #8b4513;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  position: relative;
+  /* Outer glow effect around the dungeon */
+  box-shadow:
+    0 0 30px #8b451344,
+    0 0 80px #8b451322,
+    inset 0 0 40px #00000099;
+  background: #000;
+}
+
+/* ════════════════════════════════════════
+   GAME WORLD
+   This div holds ALL tiles and entities.
+   It is repositioned by JS to scroll/pan
+   the camera to follow the player.
+   ════════════════════════════════════════ */
+#game-world {
+  position: absolute;
+  top: 0; left: 0;
+  /* Size is set dynamically by JS based on map size */
+}
+
+/* ════════════════════════════════════════
+   TILE BASE
+   All tiles share this base style.
+   Width/height matches TILE_SIZE in game.js (32px).
+   ════════════════════════════════════════ */
+.tile {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+}
+
+/* ════════════════════════════════════════
+   FLOOR TILE
+   The walkable dungeon floor.
+   ── TO CUSTOMISE ──
+   Change background-color for a different stone colour.
+   Change border colour for grout lines.
+   ════════════════════════════════════════ */
+.tile-floor {
+  background-color: #2a2018;   /* ← main floor stone colour */
+  border: 1px solid #1a1208;   /* ← grout line colour */
+  /* Subtle inner texture using box-shadow */
+  box-shadow: inset 1px 1px 0 #3a3020, inset -1px -1px 0 #1a1008;
+}
+
+/* ════════════════════════════════════════
+   WALL TILE
+   Solid dungeon walls.
+   ── TO CUSTOMISE ──
+   Change background for wall stone colour.
+   The gradient gives a 3D chiselled look.
+   ════════════════════════════════════════ */
+.tile-wall {
+  background: linear-gradient(135deg, #4a3828 0%, #2e2218 50%, #1e1610 100%);
+  border: 1px solid #1a1008;
+  /* Top-left highlight for 3D stone feel */
+  box-shadow:
+    inset 2px 2px 0 #5a4838,
+    inset -2px -2px 0 #0e0a06;
+}
+
+/* ════════════════════════════════════════
+   WALL TOP EDGE
+   The top face of a wall (lighter, like
+   looking down at the top of a stone block).
+   ════════════════════════════════════════ */
+.tile-wall-top {
+  background: linear-gradient(180deg, #6a5040 0%, #4a3828 100%);
+  border: 1px solid #2e2010;
+  box-shadow: inset 0 2px 0 #7a6050;
+}
+
+/* ════════════════════════════════════════
+   DOOR TILE — LOCKED
+   A locked door requiring a key.
+   ── TO CUSTOMISE ──
+   Change colours, add a border-radius for
+   a rounded arch look, etc.
+   ════════════════════════════════════════ */
+.tile-door-locked {
+  background: linear-gradient(180deg, #5c3a1e, #3d2510);
+  border: 2px solid #c0850a;   /* ← gold lock border */
+  box-shadow:
+    inset 0 0 8px #00000088,
+    0 0 6px #c0850a66;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;             /* ← lock emoji size */
+  cursor: default;
+}
+
+/* ════════════════════════════════════════
+   DOOR TILE — OPEN
+   An open door / exit portal.
+   ════════════════════════════════════════ */
+.tile-door-open {
+  background: radial-gradient(circle, #1a4a6e 0%, #0a1e2e 100%);
+  border: 2px solid #4af;
+  box-shadow:
+    inset 0 0 12px #4af8,
+    0 0 10px #4af6;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+/* ════════════════════════════════════════
+   EXIT TILE
+   The level exit staircase.
+   ════════════════════════════════════════ */
+.tile-exit {
+  background: radial-gradient(circle, #2e1a4e 0%, #0e0818 100%);
+  border: 2px solid #9b59b6;
+  box-shadow:
+    inset 0 0 10px #9b59b688,
+    0 0 12px #9b59b666;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+/* ════════════════════════════════════════
+   TORCH TILE
+   Wall-mounted torch — purely CSS flame.
+   ════════════════════════════════════════ */
+.tile-torch {
+  background: transparent;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  /* Warm glow cast on surrounding floor */
+  filter: drop-shadow(0 0 8px #ff8c0099);
+  animation: torchFlicker 1.4s infinite alternate ease-in-out;
+}
+
+/* Torch flicker animation */
+@keyframes torchFlicker {
+  0%   { filter: drop-shadow(0 0 6px #ff8c00aa)  brightness(1.0); }
+  40%  { filter: drop-shadow(0 0 12px #ffa500cc) brightness(1.1); }
+  70%  { filter: drop-shadow(0 0 5px #ff6600aa)  brightness(0.95); }
+  100% { filter: drop-shadow(0 0 10px #ff8c00bb) brightness(1.05); }
+}
+
+/* ════════════════════════════════════════
+   GOLD COIN PICKUP
+   Collectible gold coins on the floor.
+   ════════════════════════════════════════ */
+.tile-gold {
+  background: transparent;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  animation: coinBob 1.2s infinite alternate ease-in-out;
+  cursor: default;
+}
+
+@keyframes coinBob {
+  0%   { transform: translateY(0px);  }
+  100% { transform: translateY(-3px); }
+}
+
+/* ════════════════════════════════════════
+   KEY PICKUP
+   Collectible key — unlocks locked doors.
+   ════════════════════════════════════════ */
+.tile-key {
+  background: transparent;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  animation: keyGlow 1.6s infinite alternate ease-in-out;
+}
+
+@keyframes keyGlow {
+  0%   { filter: drop-shadow(0 0 4px #e8c87a88); }
+  100% { filter: drop-shadow(0 0 10px #e8c87acc); }
+}
+
+/* ════════════════════════════════════════
+   HEALTH POTION PICKUP
+   Red potion that restores HP.
+   ════════════════════════════════════════ */
+.tile-potion {
+  background: transparent;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  animation: potionPulse 1.8s infinite alternate ease-in-out;
+}
+
+@keyframes potionPulse {
+  0%   { filter: drop-shadow(0 0 4px #e74c3c88); transform: scale(1.0); }
+  100% { filter: drop-shadow(0 0 8px #e74c3ccc); transform: scale(1.08); }
+}
+
+/* ════════════════════════════════════════
+   PLAYER CHARACTER
+   The hero tile — a CSS-drawn knight.
+   ── TO CUSTOMISE ──
+   Change the emoji, background, border,
+   or swap in a background-image sprite.
+   ════════════════════════════════════════ */
+.entity-player {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  /* Offset to centre within a 32px tile */
+  margin: 2px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  /* Blue glow to distinguish player from enemies */
+  filter: drop-shadow(0 0 6px #4af);
+  transition: left 0.08s linear, top 0.08s linear;
+  /* Attack flash animation (triggered by JS adding .attacking class) */
+}
+
+.entity-player.attacking {
+  animation: attackFlash 0.25s ease-out;
+}
+
+@keyframes attackFlash {
+  0%   { filter: drop-shadow(0 0 6px #4af) brightness(1.0); transform: scale(1.0); }
+  50%  { filter: drop-shadow(0 0 16px #fff) brightness(2.0); transform: scale(1.2); }
+  100% { filter: drop-shadow(0 0 6px #4af) brightness(1.0); transform: scale(1.0); }
+}
+
+/* ════════════════════════════════════════
+   ENEMY — SKELETON (Level 1)
+   ── TO CUSTOMISE ──
+   Change the emoji or swap for a
+   background-image sprite sheet.
+   ════════════════════════════════════════ */
+.entity-enemy-skeleton {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  margin: 2px;
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  filter: drop-shadow(0 0 4px #ffffff66);
+  transition: left 0.15s linear, top 0.15s linear;
+}
+
+/* ════════════════════════════════════════
+   ENEMY — ORC (Level 2)
+   ════════════════════════════════════════ */
+.entity-enemy-orc {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  margin: 2px;
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  filter: drop-shadow(0 0 4px #2ecc7166);
+  transition: left 0.15s linear, top 0.15s linear;
+}
+
+/* ════════════════════════════════════════
+   ENEMY — DEMON (Level 3 boss)
+   ════════════════════════════════════════ */
+.entity-enemy-demon {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  margin: 1px;
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  filter: drop-shadow(0 0 8px #e74c3caa);
+  transition: left 0.15s linear, top 0.15s linear;
+  animation: demonPulse 2s infinite alternate;
+}
+
+@keyframes demonPulse {
+  0%   { filter: drop-shadow(0 0 6px #e74c3c88); }
+  100% { filter: drop-shadow(0 0 14px #e74c3cdd); }
+}
+
+/* ════════════════════════════════════════
+   ENEMY HEALTH BAR
+   Small red bar above each enemy.
+   ════════════════════════════════════════ */
+.enemy-hp-bar-bg {
+  position: absolute;
+  top: -6px;
+  left: 2px;
+  width: 28px;
+  height: 4px;
+  background: #3a0000;
+  border: 1px solid #600;
+  border-radius: 2px;
+  z-index: 11;
+  overflow: hidden;
+}
+
+.enemy-hp-bar {
+  height: 100%;
+  background: #e74c3c;   /* ← enemy health bar colour */
+  border-radius: 2px;
+  transition: width 0.15s ease;
+}
+
+/* ════════════════════════════════════════
+   DAMAGE NUMBER POPUP
+   Floating numbers when damage is dealt.
+   ════════════════════════════════════════ */
+.dmg-popup {
+  position: absolute;
+  z-index: 20;
+  font-size: 13px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  pointer-events: none;
+  animation: dmgFloat 0.9s ease-out forwards;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.dmg-popup.player-dmg { color: #e74c3c; }   /* ← player takes damage colour */
+.dmg-popup.enemy-dmg  { color: #f1c40f; }   /* ← enemy takes damage colour */
+
+@keyframes dmgFloat {
+  0%   { opacity: 1; transform: translateY(0px);   }
+  100% { opacity: 0; transform: translateY(-28px); }
+}
+
+/* ════════════════════════════════════════
+   SCREENS (start / level / gameover / win)
+   ════════════════════════════════════════ */
+.screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.88);
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+
+.screen.hidden { display: none; }
+
+.screen-box {
+  background: linear-gradient(180deg, #1c0d00, #0e0600);
+  border: 2px solid #8b4513;
+  border-radius: 8px;
+  padding: 36px 48px;
+  text-align: center;
+  max-width: 420px;
+  box-shadow: 0 0 40px #8b451366, inset 0 0 20px #00000066;
+}
+
+.screen-icon {
+  font-size: 52px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.screen-box h1 {
+  font-size: 36px;
+  color: #e8c87a;          /* ← screen title colour */
+  text-shadow: 0 0 16px #e8c87a66, 2px 2px 0 #5a3000;
+  letter-spacing: 4px;
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+
+.screen-box p, .subtitle {
+  color: #c8a86a;
+  font-size: 14px;
+  line-height: 1.7;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+/* Controls grid on start screen */
+.control-grid {
+  margin: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+.ctrl-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #a08848;
+  font-size: 13px;
+}
+
+kbd {
+  background: #2e1800;
+  border: 1px solid #8b4513;
+  border-radius: 3px;
+  padding: 2px 7px;
+  color: #e8c87a;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  min-width: 60px;
+  text-align: center;
+}
+
+.stat-list {
+  margin: 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #c8a86a;
+  font-size: 14px;
+}
+
+.hint-text {
+  color: #806838;
+  font-size: 12px;
+  letter-spacing: 2px;
+  margin-top: 10px;
+}
+
+/* ════════════════════════════════════════
+   BUTTON
+   ════════════════════════════════════════ */
+.btn {
+  margin-top: 20px;
+  padding: 12px 36px;
+  font-size: 16px;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  letter-spacing: 3px;
+  color: #1c0d00;
+  background: linear-gradient(180deg, #e8c87a, #c0a050);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 0 14px #e8c87a44;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+}
+
+.btn:hover {
+  background: linear-gradient(180deg, #f8e09a, #d8b060);
+  transform: scale(1.04);
+  box-shadow: 0 0 20px #e8c87a88;
+}
+
+.btn:active { transform: scale(0.97); }
+
+/* ════════════════════════════════════════
+   CAMERA TRANSITION
+   Smooth fade when moving between levels.
+   ════════════════════════════════════════ */
+#game-viewport.fade-out {
+  animation: fadeOut 0.4s ease forwards;
+}
+#game-viewport.fade-in {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

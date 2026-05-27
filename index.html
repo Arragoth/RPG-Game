@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dungeon Crawler</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════
+       HUD — health, gold, keys, level info
+       ══════════════════════════════════════ -->
+  <div id="hud">
+    <div id="hud-left">
+      <span id="hud-level-label">⚔️ LEVEL <span id="hud-level">1</span></span>
+      <div id="health-bar-wrap">
+        <span>❤️</span>
+        <div id="health-bar-bg">
+          <div id="health-bar"></div>
+        </div>
+        <span id="hp-text">100</span>
+      </div>
+    </div>
+    <div id="hud-right">
+      <span>🪙 <span id="gold-val">0</span></span>
+      <span>🗝️ <span id="key-val">0</span></span>
+      <span>⚔️ <span id="kill-val">0</span></span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       GAME VIEWPORT — the dungeon renders here
+       All tiles, entities, and objects are
+       injected into #game-world by game.js
+       ══════════════════════════════════════ -->
+  <div id="game-viewport">
+    <div id="game-world"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SCREENS — start / level splash / death / win
+       ══════════════════════════════════════ -->
+
+  <!-- Start Screen -->
+  <div id="start-screen" class="screen">
+    <div class="screen-box">
+      <div class="screen-icon">⚔️</div>
+      <h1>DUNGEON<br/>CRAWLER</h1>
+      <p class="subtitle">A D&amp;D Adventure</p>
+      <div class="control-grid">
+        <div class="ctrl-row"><kbd>W A S D</kbd><span>Move</span></div>
+        <div class="ctrl-row"><kbd>SPACE</kbd><span>Attack</span></div>
+        <div class="ctrl-row"><kbd>🗝️</kbd><span>Collect keys to open doors</span></div>
+        <div class="ctrl-row"><kbd>🚪</kbd><span>Reach the exit to advance</span></div>
+      </div>
+      <button id="start-btn" class="btn">BEGIN QUEST</button>
+    </div>
+  </div>
+
+  <!-- Level Splash Screen (shown briefly between levels) -->
+  <div id="level-screen" class="screen hidden">
+    <div class="screen-box">
+      <div class="screen-icon" id="level-icon">🏰</div>
+      <h1 id="level-title">LEVEL 1</h1>
+      <p id="level-subtitle">The Entrance Hall</p>
+      <p class="hint-text">Prepare yourself...</p>
+    </div>
+  </div>
+
+  <!-- Game Over Screen -->
+  <div id="gameover-screen" class="screen hidden">
+    <div class="screen-box">
+      <div class="screen-icon">💀</div>
+      <h1>YOU DIED</h1>
+      <p>The dungeon claims another soul.</p>
+      <div class="stat-list">
+        <div>🪙 Gold: <strong id="go-gold">0</strong></div>
+        <div>⚔️ Kills: <strong id="go-kills">0</strong></div>
+      </div>
+      <button id="restart-btn" class="btn">TRY AGAIN</button>
+    </div>
+  </div>
+
+  <!-- Victory Screen -->
+  <div id="win-screen" class="screen hidden">
+    <div class="screen-box">
+      <div class="screen-icon">🏆</div>
+      <h1>VICTORY!</h1>
+      <p>You've conquered all three levels!</p>
+      <div class="stat-list">
+        <div>🪙 Final Gold: <strong id="win-gold">0</strong></div>
+        <div>⚔️ Total Kills: <strong id="win-kills">0</strong></div>
+      </div>
+      <button id="win-btn" class="btn">PLAY AGAIN</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
+
+
