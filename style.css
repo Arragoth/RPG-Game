@@ -587,3 +587,154 @@ kbd {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
+/* ════════════════════════════════════════
+   GOLD COIN — BRIGHT YELLOW RESTYLE
+   Changed from emoji to a pure CSS circle
+   so we have full colour control.
+   ── TO CUSTOMISE ──
+   Change background for coin colour.
+   Change box-shadow colour for glow.
+   ════════════════════════════════════════ */
+.tile-gold {
+  background: transparent;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  animation: coinBob 1.2s infinite alternate ease-in-out;
+  cursor: default;
+}
+
+/* The actual coin circle — drawn as a pseudo-element */
+.tile-gold::after {
+  content: '';
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff176, #ffe600 40%, #f9a800 100%);
+  border: 2px solid #c47f00;
+  box-shadow:
+    0 0 6px #ffe600cc,
+    0 0 14px #ffe60066,
+    inset 0 1px 2px #fff9c4;
+}
+
+@keyframes coinBob {
+  0%   { transform: translateY(0px) scale(1.0);   }
+  100% { transform: translateY(-4px) scale(1.05); }
+}
+
+/* ════════════════════════════════════════
+   PROJECTILE — MAGIC BOLT
+   The ranged attack fired by the player.
+   ── TO CUSTOMISE ──
+   Change background/box-shadow for a
+   different spell colour (e.g. fire = #ff4400)
+   ════════════════════════════════════════ */
+.projectile {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  /* ← Arcane purple magic bolt colour */
+  background: radial-gradient(circle, #ffffff, #c084fc 40%, #7c3aed 100%);
+  box-shadow:
+    0 0 6px #c084fccc,
+    0 0 14px #7c3aed88;
+  z-index: 15;
+  pointer-events: none;
+  /* Offset to centre in tile */
+  margin: 11px;
+  animation: boltPulse 0.3s infinite alternate;
+}
+
+/* Projectile travelling left */
+.projectile.left {
+  background: radial-gradient(circle, #ffffff, #c084fc 40%, #7c3aed 100%);
+  box-shadow: 0 0 6px #c084fccc, 0 0 14px #7c3aed88;
+}
+
+@keyframes boltPulse {
+  0%   { box-shadow: 0 0 6px #c084fccc,  0 0 12px #7c3aed66; transform: scale(1.0); }
+  100% { box-shadow: 0 0 10px #e879f9cc, 0 0 20px #a855f788; transform: scale(1.2); }
+}
+
+/* ════════════════════════════════════════
+   EQUIPMENT PICKUP TILES
+   Wands and upgrades found in locked rooms.
+   ── TO CUSTOMISE ──
+   Change the glow colour per item tier.
+   ════════════════════════════════════════ */
+.tile-equipment {
+  background: transparent;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  animation: equipGlow 1.5s infinite alternate ease-in-out;
+}
+
+/* Common item — green glow */
+.tile-equipment.tier-common {
+  filter: drop-shadow(0 0 5px #4ade8088);
+}
+
+/* Rare item — blue glow */
+.tile-equipment.tier-rare {
+  filter: drop-shadow(0 0 7px #60a5faaa);
+}
+
+/* Epic item — purple glow */
+.tile-equipment.tier-epic {
+  filter: drop-shadow(0 0 10px #c084fccc);
+}
+
+@keyframes equipGlow {
+  0%   { transform: translateY(0px)  scale(1.0); }
+  100% { transform: translateY(-4px) scale(1.1); }
+}
+
+/* ════════════════════════════════════════
+   EQUIPMENT TOOLTIP
+   Popup shown briefly when player picks
+   up a piece of equipment.
+   ════════════════════════════════════════ */
+.equip-tooltip {
+  position: absolute;
+  z-index: 25;
+  background: linear-gradient(180deg, #1e0a2e, #0e0618);
+  border: 1px solid #7c3aed;
+  border-radius: 4px;
+  padding: 6px 10px;
+  color: #e9d5ff;
+  font-size: 11px;
+  font-family: 'Courier New', monospace;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 0 12px #7c3aed66;
+  animation: tooltipFloat 2s ease-out forwards;
+}
+
+.equip-tooltip .equip-name  { color: #c084fc; font-weight: bold; font-size: 12px; display: block; }
+.equip-tooltip .equip-bonus { color: #86efac; font-size: 11px; display: block; margin-top: 2px; }
+
+@keyframes tooltipFloat {
+  0%   { opacity: 1; transform: translateY(0px);   }
+  60%  { opacity: 1; transform: translateY(-20px);  }
+  100% { opacity: 0; transform: translateY(-32px);  }
+}
+
+/* ════════════════════════════════════════
+   HUD — DAMAGE STAT DISPLAY
+   Shows current attack power in the HUD.
+   ════════════════════════════════════════ */
+#hud-atk {
+  color: #c084fc;   /* ← attack power HUD colour — purple for magic */
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-shadow: 0 0 6px #7c3aed66;
+}
