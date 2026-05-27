@@ -642,46 +642,69 @@ function updateHUD() {
 
 // ════════════════════════════════════════════════════════════
 //  WALKABILITY CHECK
-//  Returns true if the tile at (x, y) can be walked onto.
+//  Returns true if the tile at (x, y) can be stepped onto.
+//  ── TO ALLOW a new tile type to be walked on:
+//     add it to the return statement below ──
 // ════════════════════════════════════════════════════════════
 function isWalkable(x, y) {
   const map = state.map;
-  if (y < 0 || y >= map.length || x < 0 || x >= map[0].length) return false;
+  if (y < 0 || y >= map.length)    return false;
+  if (x < 0 || x >= map[0].length) return false;
+
   const t = map[y][x];
-  // Walkable tile types:
-  return t === T.FLOOR   ||
-         t === T.TORCH   ||
-         t === T.GOLD    ||
-         t === T.KEY     ||
-         t === T.POTION  ||
-         t === T.EXIT    ||
+  return t === T.FLOOR      ||
+         t === T.WALL_TOP   ||
+         t === T.TORCH      ||
+         t === T.GOLD       ||
+         t === T.KEY        ||
+         t === T.POTION     ||
+         t === T.EQUIPMENT  ||   // ← equipment tiles are walkable (to collect them)
+         t === T.EXIT       ||
          t === T.DOOR_OPEN;
 }
 
 // ════════════════════════════════════════════════════════════
 //  PLAYER MOVEMENT STEP
-//  Called on a fast interval. Reads held keys and moves
-//  the player one tile at a time with a cooldown.
+//  Called every 80ms by state.moveLoop interval.
+//  Reads held keys, moves player one tile, checks pickups.
+//  ── TO CHANGE MOVE SPEED: adjust playerMoveCooldown value ──
+//    Lower number = faster movement between tiles.
 // ════════════════════════════════════════════════════════════
 let playerMoveCooldown = 0;
 
 function playerMoveStep() {
   if (state.phase !== 'playing') return;
-  if (playerMoveCooldown > 0) { playerMoveCooldown--; return; }
 
+  // ── Tick ranged cooldown every frame regardless of movement ──
+  if (state.player.rangedCooldown > 0) state.player.rangedCooldown--;
+
+  // ── Tick move cooldown ──
+  if (playerMoveCooldown > 0) {
+    playerMoveCooldown--;
+    return;
+  }
+
+  // ── Read directional input ──
   let dx = 0, dy = 0;
-
   if      (keys['ArrowUp']    || keys['KeyW']) dy = -1;
   else if (keys['ArrowDown']  || keys['KeyS']) dy =  1;
   else if (keys['ArrowLeft']  || keys['KeyA']) dx = -1;
   else if (keys['ArrowRight'] || keys['KeyD']) dx =  1;
-  else return; // no key held
+  else return; // no key held — nothing to do
+
+  // ── Update facing direction for ranged attack ──
+  if (dx !== 0) state.player.facing = dx; // 1 = right, -1 = left
 
   const nx = state.player.x + dx;
   const ny = state.player.y + dy;
 
-  // ── Check for locked door ──
-  const targetTile = state.map[ny]?.[nx];
+  // ── Bounds check ──
+  if (ny < 0 || ny >= state.map.length ||
+      nx < 0 || nx >= state.map[0].length) return;
+
+  const targetTile = state.map[ny][nx];
+
+  // ── Locked door — try to unlock ──
   if (targetTile === T.DOOR_LOCKED) {
     if (state.player.keys > 0) {
       unlockDoor(nx, ny);
@@ -692,42 +715,47 @@ function playerMoveStep() {
     return;
   }
 
+  // ── Solid tile — blocked ──
   if (!isWalkable(nx, ny)) return;
 
-  // ── Check for enemy on target tile ──
+  // ── Enemy on target tile — bump attack ──
   const enemyOnTile = state.enemies.find(
     e => e.alive && e.x === nx && e.y === ny
   );
   if (enemyOnTile) {
-    // Bump-attack: moving into an enemy attacks it
-    dealDamageToEnemy(enemyOnTile, ENTITY_STATS.player.attackDamage);
+    dealDamageToEnemy(enemyOnTile, state.player.attackDamage);
     playerMoveCooldown = 4;
     triggerAttackAnim();
     return;
   }
 
-  // ── Move player ──
+  // ── Move the player ──
   state.player.x = nx;
   state.player.y = ny;
 
-  // Update player element position
+  // Move the player's DOM element
   const playerEl = document.getElementById('player-entity');
   if (playerEl) {
     playerEl.style.left = (nx * TILE_SIZE) + 'px';
     playerEl.style.top  = (ny * TILE_SIZE) + 'px';
   }
 
-  // ── Check pickups on new tile ──
+  // ── Check for pickups on the new tile ──
   checkPickup(nx, ny);
 
-  // ── Check exit tile ──
+  // ── Check for exit tile ──
   if (state.map[ny][nx] === T.EXIT) {
     advanceLevel();
+    return;
   }
 
+  // ── Pan camera to follow player ──
   updateCamera();
-  playerMoveCooldown = 3;   // ← adjust this number to change player move speed
-                             //   lower = faster, higher = slower
+
+  // ── Reset move cooldown ──
+  // Adjust this value to change how fast the player moves:
+  // 2 = very fast  |  3 = normal  |  5 = slow
+  playerMoveCooldown = 3;
 }
 
 // ════════════════════════════════════════════════════════════
