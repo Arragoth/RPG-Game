@@ -112,7 +112,7 @@ body {
    the camera to follow the player.
    ════════════════════════════════════════ */
 #game-world {
-  position: absolute;
+  position: relative;
   top: 0; left: 0;
   /* Size is set dynamically by JS based on map size */
 }
@@ -634,21 +634,18 @@ kbd {
    different spell colour (e.g. fire = #ff4400)
    ════════════════════════════════════════ */
 .projectile {
-  position: absolute;
+  position: absolute;   /* ← CRITICAL — must be absolute */
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  /* ← Arcane purple magic bolt colour */
   background: radial-gradient(circle, #ffffff, #c084fc 40%, #7c3aed 100%);
-  box-shadow:
-    0 0 6px #c084fccc,
-    0 0 14px #7c3aed88;
+  box-shadow: 0 0 6px #c084fccc, 0 0 14px #7c3aed88;
   z-index: 15;
   pointer-events: none;
-  /* Offset to centre in tile */
-  margin: 11px;
   animation: boltPulse 0.3s infinite alternate;
+  /* ── NO margin here — margin offsets break the tile coordinate math ── */
 }
+
 
 /* Projectile travelling left */
 .projectile.left {

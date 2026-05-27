@@ -243,11 +243,17 @@ let state = {
     gold: 0,
     keys: 0,
     kills: 0,
+    attackDamage: ENTITY_STATS.player.attackDamage,
+    rangedDamage: 20,
+    rangedCooldown: 0,
+    facing: 1,
   },
   map: [],
   enemies: [],
+  projectiles: [],   // ← ADD THIS LINE
   gameLoop: null,
-  phase: 'start',   // 'start' | 'playing' | 'dead' | 'win'
+  moveLoop: null,
+  phase: 'start',
 };
 
 // ════════════════════════════════════════════════════════════
@@ -335,6 +341,11 @@ document.addEventListener('keydown', e => {
   if ((e.code === 'Space' || e.code === 'KeyE') && state.phase === 'playing') {
     playerAttack();
   }
+    // Ranged attack — F or X
+  if (e.code === 'KeyF' || e.code === 'KeyX') {
+    fireProjectile();
+  }
+
 });
 
 document.addEventListener('keyup', e => { keys[e.code] = false; });
@@ -363,6 +374,7 @@ document.getElementById('win-btn').addEventListener('click', () => {
 function beginGame() {
   // Reset all player stats for a fresh run
   state.currentLevel = 0;
+  state.projectiles = [];
   state.player = {
     x: 0, y: 0,
     hp: ENTITY_STATS.player.hp,
@@ -393,6 +405,10 @@ function loadLevel(levelIndex) {
   // Place player at spawn point
   state.player.x = levelData.playerStart.x;
   state.player.y = levelData.playerStart.y;
+  // Clear any in-flight projectiles when loading a new level
+  state.projectiles.forEach(b => destroyProjectile(b));
+  state.projectiles = [];
+
 
   // Build enemy objects from spawn configs
   state.enemies = levelData.enemies.map(cfg => ({
@@ -624,20 +640,45 @@ function updateCamera() {
 
 // ════════════════════════════════════════════════════════════
 //  HUD UPDATE
+//  All getElementById calls are null-checked so a missing
+//  element in the HTML never crashes the game loop.
+//  ── TO ADD a new HUD stat: add a null-safe line here ──
 // ════════════════════════════════════════════════════════════
 function updateHUD() {
   const p = state.player;
-  hudHp.textContent   = p.hp;
-  hudGold.textContent = p.gold;
-  hudKeys.textContent = p.keys;
-  hudKills.textContent = p.kills;
-  // Health bar width as percentage
-  const pct = Math.max(0, (p.hp / p.maxHp) * 100);
-  hudHpBar.style.width = pct + '%';
-  // Colour shifts red → yellow → green based on HP
-  if      (pct > 60) hudHpBar.style.background = 'linear-gradient(90deg, #27ae60, #2ecc71)';
-  else if (pct > 30) hudHpBar.style.background = 'linear-gradient(90deg, #f39c12, #f1c40f)';
-  else               hudHpBar.style.background = 'linear-gradient(90deg, #c0392b, #e74c3c)';
+
+  // ── HP text and bar ──
+  const hpText = document.getElementById('hp-text');
+  if (hpText) hpText.textContent = Math.max(0, p.hp);
+
+  const hpBar = document.getElementById('health-bar');
+  if (hpBar) {
+    const pct = Math.max(0, (p.hp / p.maxHp) * 100);
+    hpBar.style.width = pct + '%';
+    if      (pct > 60) hpBar.style.background = 'linear-gradient(90deg, #27ae60, #2ecc71)';
+    else if (pct > 30) hpBar.style.background = 'linear-gradient(90deg, #f39c12, #f1c40f)';
+    else               hpBar.style.background = 'linear-gradient(90deg, #c0392b, #e74c3c)';
+  }
+
+  // ── Gold ──
+  const goldEl = document.getElementById('gold-val');
+  if (goldEl) goldEl.textContent = p.gold;
+
+  // ── Keys ──
+  const keyEl = document.getElementById('key-val');
+  if (keyEl) keyEl.textContent = p.keys;
+
+  // ── Kill count ──
+  const killEl = document.getElementById('kill-val');
+  if (killEl) killEl.textContent = p.kills;
+
+  // ── Attack power (added with equipment system) ──
+  const atkEl = document.getElementById('atk-val');
+  if (atkEl) atkEl.textContent = p.attackDamage;
+
+  // ── Level number ──
+  const lvlEl = document.getElementById('hud-level');
+  if (lvlEl) lvlEl.textContent = state.currentLevel + 1;
 }
 
 // ════════════════════════════════════════════════════════════
@@ -796,22 +837,143 @@ function playerAttack() {
 }
 
 // ════════════════════════════════════════════════════════════
+//  FIRE PROJECTILE
+//  The bolt is positioned in pixels, centred on each tile.
+//  TILE_SIZE is used to convert tile coords → pixel coords.
+//  HALF offsets the bolt to the centre of the tile visually.
+// ════════════════════════════════════════════════════════════
+const PROJECTILE_SPEED = 80; // ms per tile — lower = faster bolt
+
+function fireProjectile() {
+  if (state.player.rangedCooldown > 0) return;
+
+  const dir  = state.player.facing;       // 1 = right, -1 = left
+  const HALF = Math.floor(TILE_SIZE / 2); // centre offset in pixels
+
+  // Start one tile ahead of the player in the facing direction
+  let boltX = state.player.x + dir;
+  let boltY = state.player.y;
+
+  // Don't fire into a wall immediately
+  if (!isWalkable(boltX, boltY)) return;
+
+  // Create the DOM element
+  const el = document.createElement('div');
+  el.classList.add('projectile');
+  // Position centred on the starting tile
+  el.style.left = (boltX * TILE_SIZE + HALF - 5) + 'px'; // -5 = half bolt width
+  el.style.top  = (boltY * TILE_SIZE + HALF - 5) + 'px';
+  gameWorld.appendChild(el);
+
+  const bolt = {
+    x:     boltX,
+    y:     boltY,
+    dir:   dir,
+    damage: state.player.rangedDamage,
+    el:    el,
+    alive: true,
+    timer: null,
+  };
+
+  state.projectiles.push(bolt);
+
+  // Check the starting tile for an immediate hit
+  const immediateHit = state.enemies.find(
+    e => e.alive && e.x === boltX && e.y === boltY
+  );
+  if (immediateHit) {
+    dealDamageToEnemy(immediateHit, bolt.damage);
+    destroyProjectile(bolt);
+    state.player.rangedCooldown = 5;
+    return;
+  }
+
+  // Travel loop — moves one tile per tick
+  bolt.timer = setInterval(() => {
+    if (!bolt.alive) { clearInterval(bolt.timer); return; }
+
+    const nx = bolt.x + bolt.dir;
+    const ny = bolt.y;
+
+    // ── Out of bounds ──
+    if (ny < 0 || ny >= state.map.length ||
+        nx < 0 || nx >= state.map[0].length) {
+      destroyProjectile(bolt);
+      return;
+    }
+
+    // ── Hit a wall ──
+    if (!isWalkable(nx, ny)) {
+      destroyProjectile(bolt);
+      return;
+    }
+
+    // ── Hit an enemy ──
+    const hitEnemy = state.enemies.find(
+      e => e.alive && e.x === nx && e.y === ny
+    );
+    if (hitEnemy) {
+      // Move bolt visually to the hit tile before destroying
+      bolt.el.style.left = (nx * TILE_SIZE + HALF - 5) + 'px';
+      dealDamageToEnemy(hitEnemy, bolt.damage);
+      destroyProjectile(bolt);
+      return;
+    }
+
+    // ── Move bolt one tile ──
+    bolt.x = nx;
+    bolt.el.style.left = (nx * TILE_SIZE + HALF - 5) + 'px';
+
+  }, PROJECTILE_SPEED);
+
+  state.player.rangedCooldown = 5;
+}
+
+// ════════════════════════════════════════════════════════════
+//  DESTROY PROJECTILE — burst flash then remove
+// ════════════════════════════════════════════════════════════
+function destroyProjectile(bolt) {
+  bolt.alive = false;
+  clearInterval(bolt.timer);
+  if (bolt.el) {
+    bolt.el.style.transition = 'opacity 0.12s, transform 0.12s';
+    bolt.el.style.opacity    = '0';
+    bolt.el.style.transform  = 'scale(3)';
+    setTimeout(() => { if (bolt.el) bolt.el.remove(); }, 120);
+  }
+  state.projectiles = state.projectiles.filter(b => b !== bolt);
+}
+
+// ════════════════════════════════════════════════════════════
 //  DEAL DAMAGE TO ENEMY
+//  Called by both melee (playerAttack) and ranged (fireProjectile).
+//  damage param must be a number — defaults to 1 if undefined.
 // ════════════════════════════════════════════════════════════
 function dealDamageToEnemy(enemy, damage) {
-  enemy.hp -= damage;
-  showFloatingText(`-${damage}`, enemy.x, enemy.y, 'enemy-dmg');
+  // Guard — if damage is undefined default to 1 so it never shows 'undefined'
+  const dmg = (typeof damage === 'number' && !isNaN(damage)) ? damage : 1;
 
-  // Update enemy HP bar
-  if (enemy.hpBarEl) {
-    const pct = Math.max(0, (enemy.hp / enemy.maxHp) * 100);
-    enemy.hpBarEl.style.width = pct + '%';
-  }
+  enemy.hp -= dmg;
+  showFloatingText(`-${dmg}`, enemy.x, enemy.y, 'enemy-dmg');
 
   if (enemy.hp <= 0) {
-    killEnemy(enemy);
+    enemy.alive = false;
+    state.player.kills++;
+    updateHUD();
+
+    // Remove enemy DOM element
+    const el = document.getElementById(`enemy-${enemy.id}`);
+    if (el) {
+      el.style.transition = 'opacity 0.3s, transform 0.3s';
+      el.style.opacity    = '0';
+      el.style.transform  = 'scale(1.5)';
+      setTimeout(() => el.remove(), 300);
+    }
+
+    checkLevelClear();
   }
 }
+
 
 // ════════════════════════════════════════════════════════════
 //  KILL ENEMY
@@ -1051,3 +1213,12 @@ function triggerWin() {
 //  READY — show start screen on page load
 // ════════════════════════════════════════════════════════════
 startScreen.classList.remove('hidden');
+
+// ════════════════════════════════════════════════════════════
+//  STARTUP — wait for DOM to be fully ready
+// ════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  // Show start screen — all elements are guaranteed to exist now
+  startScreen.classList.remove('hidden');
+  updateHUD();
+});
