@@ -68,7 +68,10 @@
       <div id="char-cards">
 
         <div class="char-card" id="card-wizard" onclick="selectCharacter('wizard')">
-          <div class="char-emoji">🧙</div>
+          <!-- Portrait: JS injects <img> here, falls back to emoji span -->
+          <div class="char-portrait" id="card-portrait-wizard">
+            <span class="char-emoji">🧙</span>
+          </div>
           <h2>Wizard</h2>
           <p class="char-desc">Fragile but deadly at range. Fires powerful magic bolts.</p>
           <ul class="char-stats">
@@ -79,7 +82,10 @@
         </div>
 
         <div class="char-card" id="card-warrior" onclick="selectCharacter('warrior')">
-          <div class="char-emoji">🛡️</div>
+          <!-- Portrait: JS injects <img> here, falls back to emoji span -->
+          <div class="char-portrait" id="card-portrait-warrior">
+            <span class="char-emoji">🛡️</span>
+          </div>
           <h2>Warrior</h2>
           <p class="char-desc">Tough and hard-hitting in melee. Cannot fire projectiles.</p>
           <ul class="char-stats">
@@ -130,7 +136,8 @@
       <button id="win-btn" class="btn">PLAY AGAIN</button>
     </div>
   </div>
-    <!-- ══════════════════════════════════════
+
+  <!-- ══════════════════════════════════════
        INVENTORY / CHARACTER WINDOW
        ══════════════════════════════════════ -->
   <div id="inventory-screen" class="screen hidden">
@@ -139,7 +146,8 @@
       <!-- Left panel: character + equipment slots -->
       <div id="inv-left">
         <div id="inv-char-header">
-          <span id="inv-char-emoji">🧙</span>
+          <!-- Portrait: JS injects <img> here, falls back to emoji span -->
+          <div id="inv-char-emoji" class="inv-char-portrait"></div>
           <div>
             <div id="inv-char-name">Wizard</div>
             <div id="inv-char-gold">🪙 Gold: <strong id="inv-gold-val">0</strong></div>
@@ -178,7 +186,6 @@
     </div>
   </div>
 
-
   <script src="constants.js"></script>
   <script src="data.js"></script>
   <script src="gamestate.js"></script>
@@ -187,5 +194,4 @@
   <script src="inventory.js"></script>
   <script src="game.js"></script>
 </body>
-
 </html>
