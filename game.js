@@ -184,6 +184,34 @@ const LEVELS = [
   },
 ];
 
+// ════════════════════════════════════════════════════════════
+//  PLAYABLE CHARACTERS
+// ════════════════════════════════════════════════════════════
+const CHARACTERS = {
+  wizard: {
+    name:          'Wizard',
+    emoji:         '🧙',
+    attackDamage:  10,
+    rangedDamage:  25,
+    hp:            80,
+    maxHp:         80,
+    speed:         1,
+    description:   'Fragile but deadly at range. Fires powerful magic bolts.',
+    colour:        '#c084fc',
+  },
+  warrior: {
+    name:          'Warrior',
+    emoji:         '⚔️',
+    attackDamage:  30,
+    rangedDamage:  0,    // warriors can't use ranged
+    hp:            150,
+    maxHp:         150,
+    speed:         1,
+    description:   'Tough and hard-hitting in melee. Cannot fire projectiles.',
+    colour:        '#f97316',
+  },
+};
+
 
 // ════════════════════════════════════════════════════════════
 //  ENTITY STATS
@@ -254,6 +282,7 @@ let state = {
   gameLoop: null,
   moveLoop: null,
   phase: 'start',
+  chosenCharacter: 'wizard',
 };
 
 // ════════════════════════════════════════════════════════════
@@ -368,22 +397,51 @@ document.getElementById('win-btn').addEventListener('click', () => {
   beginGame();
 });
 
+function showCharSelect() {
+  document.getElementById('start-screen').classList.add('hidden');
+  document.getElementById('char-select-screen').classList.remove('hidden');
+}
+
 // ════════════════════════════════════════════════════════════
 //  GAME INITIALISATION
 // ════════════════════════════════════════════════════════════
 function beginGame() {
-  // Reset all player stats for a fresh run
-  state.currentLevel = 0;
-  state.projectiles = [];
+  const char = CHARACTERS[state.chosenCharacter];
+
   state.player = {
-    x: 0, y: 0,
-    hp: ENTITY_STATS.player.hp,
-    maxHp: ENTITY_STATS.player.maxHp,
-    gold: 0,
-    keys: 0,
-    kills: 0,
+    x:             0,
+    y:             0,
+    hp:            char.hp,
+    maxHp:         char.maxHp,
+    attackDamage:  char.attackDamage,
+    rangedDamage:  char.rangedDamage,
+    rangedCooldown: 0,
+    facing:        1,
+    gold:          0,
+    keys:          0,
+    kills:         0,
   };
   loadLevel(0);
+}
+
+// ════════════════════════════════════════════════════════════
+//  SELECT CHARACTER
+//  Called when the player clicks a character card.
+//  Applies the chosen character's stats to state.player
+//  then begins the game.
+// ════════════════════════════════════════════════════════════
+function selectCharacter(type) {
+  state.chosenCharacter = type;
+  const char = CHARACTERS[type];
+
+  // Highlight selected card briefly before starting
+  document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById(`card-${type}`).classList.add('selected');
+
+  setTimeout(() => {
+    document.getElementById('char-select-screen').classList.add('hidden');
+    beginGame();
+  }, 400); // short pause so the highlight is visible
 }
 
 // ════════════════════════════════════════════════════════════
@@ -647,6 +705,10 @@ function updateCamera() {
 function updateHUD() {
   const p = state.player;
 
+
+  const char = CHARACTERS[state.chosenCharacter];
+  document.getElementById('hud-character').textContent = `${char.emoji} ${char.name}`;
+
   // ── HP text and bar ──
   const hpText = document.getElementById('hp-text');
   if (hpText) hpText.textContent = Math.max(0, p.hp);
@@ -679,6 +741,12 @@ function updateHUD() {
   // ── Level number ──
   const lvlEl = document.getElementById('hud-level');
   if (lvlEl) lvlEl.textContent = state.currentLevel + 1;
+
+  const char = CHARACTERS[state.chosenCharacter];
+  const charEl = document.getElementById('hud-character');
+  charEl.textContent = `${char.emoji} ${char.name}`;
+  charEl.style.color = char.colour;   // uses the colour you defined in CHARACTERS
+
 }
 
 // ════════════════════════════════════════════════════════════
@@ -845,6 +913,8 @@ function playerAttack() {
 const PROJECTILE_SPEED = 80; // ms per tile — lower = faster bolt
 
 function fireProjectile() {
+  if (state.player.rangedCooldown > 0) return;
+  if (CHARACTERS[state.chosenCharacter].rangedDamage === 0) return;
   if (state.player.rangedCooldown > 0) return;
 
   const dir  = state.player.facing;       // 1 = right, -1 = left
