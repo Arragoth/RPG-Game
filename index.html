@@ -130,7 +130,62 @@
       <button id="win-btn" class="btn">PLAY AGAIN</button>
     </div>
   </div>
+    <!-- ══════════════════════════════════════
+       INVENTORY / CHARACTER WINDOW
+       ══════════════════════════════════════ -->
+  <div id="inventory-screen" class="screen hidden">
+    <div id="inventory-box">
 
+      <!-- Left panel: character + equipment slots -->
+      <div id="inv-left">
+        <div id="inv-char-header">
+          <span id="inv-char-emoji">🧙</span>
+          <div>
+            <div id="inv-char-name">Wizard</div>
+            <div id="inv-char-gold">🪙 Gold: <strong id="inv-gold-val">0</strong></div>
+          </div>
+        </div>
+
+        <div class="inv-section-title">⚔️ Equipment Slots</div>
+
+        <div id="inv-slots">
+          <div class="inv-slot" id="slot-weapon" data-slot="weapon">
+            <div class="inv-slot-label">Weapon</div>
+            <div class="inv-slot-item" id="slot-weapon-item">
+              <span class="inv-slot-empty">— empty —</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="inv-section-title" style="margin-top:18px;">📊 Stats</div>
+        <div id="inv-stats">
+          <div class="inv-stat-row">❤️ HP <span id="inv-hp">0 / 0</span></div>
+          <div class="inv-stat-row">⚔️ ATK <span id="inv-atk">0</span></div>
+          <div class="inv-stat-row">✨ Ranged <span id="inv-ranged">0</span></div>
+        </div>
+      </div>
+
+      <!-- Right panel: collected items / backpack -->
+      <div id="inv-right">
+        <div class="inv-section-title">🎒 Backpack</div>
+        <div id="inv-item-list">
+          <!-- populated by JS -->
+        </div>
+        <div id="inv-hint">Click an item to equip it</div>
+      </div>
+
+      <button id="inv-close-btn" class="inv-close">✕ Close  [I]</button>
+    </div>
+  </div>
+
+
+  <script src="constants.js"></script>
+  <script src="data.js"></script>
+  <script src="gamestate.js"></script>
+  <script src="render.js"></script>
+  <script src="combat.js"></script>
+  <script src="inventory.js"></script>
   <script src="game.js"></script>
 </body>
+
 </html>

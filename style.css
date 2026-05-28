@@ -727,3 +727,257 @@ button:active, .btn:active { transform: scale(0.97); }
   letter-spacing: 0.05em;
   margin-bottom: 4px;
 }
+
+/* ════════════════════════════════════════
+   INVENTORY / CHARACTER WINDOW
+   ════════════════════════════════════════ */
+#inventory-box {
+  position: relative;
+  background: linear-gradient(180deg, #1a0d2e, #0e0618);
+  border: 2px solid #7c3aed;
+  border-radius: 10px;
+  padding: 28px;
+  width: 680px;
+  max-height: 80vh;
+  display: flex;
+  gap: 24px;
+  box-shadow: 0 0 40px #7c3aed44, inset 0 0 20px #00000066;
+  overflow: hidden;
+}
+
+/* ── Left panel ── */
+#inv-left {
+  width: 240px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#inv-char-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #3b1f6a;
+}
+
+#inv-char-emoji {
+  font-size: 2.8rem;
+  filter: drop-shadow(0 0 8px #c084fc88);
+}
+
+#inv-char-name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #e2e8f0;
+  letter-spacing: 1px;
+}
+
+#inv-char-gold {
+  font-size: 0.85rem;
+  color: #e8c87a;
+  margin-top: 4px;
+}
+
+.inv-section-title {
+  font-size: 0.75rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: #7c3aed;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* Equipment slot */
+.inv-slot {
+  background: #12082a;
+  border: 1px solid #3b1f6a;
+  border-radius: 6px;
+  padding: 10px 12px;
+  transition: border-color 0.2s;
+}
+
+.inv-slot.active-slot {
+  border-color: #f97316;
+  box-shadow: 0 0 10px #f9731644;
+}
+
+.inv-slot-label {
+  font-size: 0.7rem;
+  color: #6b4fa0;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.inv-slot-item {
+  font-size: 0.9rem;
+  color: #e2e8f0;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inv-slot-empty {
+  color: #3b2a5a;
+  font-style: italic;
+  font-size: 0.8rem;
+}
+
+.inv-slot-emoji { font-size: 1.2rem; }
+
+.inv-slot-name  { color: #c084fc; font-weight: bold; }
+
+.inv-slot-bonus {
+  font-size: 0.75rem;
+  color: #86efac;
+  margin-left: auto;
+}
+
+/* Stats panel */
+#inv-stats {
+  background: #12082a;
+  border: 1px solid #3b1f6a;
+  border-radius: 6px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inv-stat-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.inv-stat-row span {
+  color: #e2e8f0;
+  font-weight: bold;
+}
+
+/* ── Right panel ── */
+#inv-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+}
+
+#inv-item-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 4px;
+}
+
+#inv-item-list::-webkit-scrollbar { width: 4px; }
+#inv-item-list::-webkit-scrollbar-track { background: #12082a; }
+#inv-item-list::-webkit-scrollbar-thumb { background: #7c3aed; border-radius: 2px; }
+
+/* Individual backpack item card */
+.inv-item-card {
+  background: #1e1040;
+  border: 1px solid #3b1f6a;
+  border-radius: 6px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+}
+
+.inv-item-card:hover {
+  border-color: #c084fc;
+  background: #2a1650;
+  transform: translateX(3px);
+}
+
+.inv-item-card.equipped {
+  border-color: #f97316;
+  background: #2a1a08;
+}
+
+.inv-item-card.equipped:hover {
+  border-color: #fb923c;
+}
+
+.inv-card-emoji { font-size: 1.4rem; flex-shrink: 0; }
+
+.inv-card-info  { flex: 1; }
+
+.inv-card-name {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #e2e8f0;
+}
+
+.inv-card-tier {
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.inv-card-tier.tier-common { color: #4ade80; }
+.inv-card-tier.tier-rare   { color: #60a5fa; }
+.inv-card-tier.tier-epic   { color: #c084fc; }
+
+.inv-card-bonus {
+  font-size: 0.8rem;
+  color: #86efac;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.inv-card-equipped-badge {
+  font-size: 0.65rem;
+  background: #f97316;
+  color: #1c0d00;
+  border-radius: 3px;
+  padding: 2px 5px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.inv-empty-msg {
+  color: #3b2a5a;
+  font-style: italic;
+  font-size: 0.85rem;
+  text-align: center;
+  margin-top: 20px;
+}
+
+#inv-hint {
+  font-size: 0.72rem;
+  color: #4b3070;
+  text-align: center;
+  letter-spacing: 1px;
+  padding-top: 6px;
+  border-top: 1px solid #3b1f6a;
+}
+
+/* Close button */
+.inv-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  margin: 0;
+  padding: 6px 14px;
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+
+/* HUD inventory hint */
+#hud-inv-hint {
+  color: #6b4fa0 !important;
+  font-size: 11px !important;
+  letter-spacing: 1px;
+}
