@@ -11,27 +11,23 @@
   <!-- ══════════════════════════════════════
        HUD — health, gold, keys, level info
        ══════════════════════════════════════ -->
-<div id="hud">
-  <div id="hud-left">
-    <span id="hud-character">🧙 Wizard</span>   <!-- ← ADD HERE -->
-    <span id="hud-level-label">⚔️ LEVEL <span id="hud-level">1</span></span>
-    <div id="health-bar-wrap">
-      <span>❤️</span>
-      <div id="health-bar-bg">
-        <div id="health-bar"></div>
+  <div id="hud">
+    <div id="hud-left">
+      <span id="hud-character">🧙 Wizard</span>
+      <span id="hud-level-label">⚔️ LEVEL <span id="hud-level">1</span></span>
+      <div id="health-bar-wrap">
+        <span>❤️</span>
+        <div id="health-bar-bg">
+          <div id="health-bar"></div>
+        </div>
+        <span id="hp-text">100</span>
       </div>
-      <span id="hp-text">100</span>
     </div>
-  </div>
-  <div id="hud-right">
-    <span id="hud-atk">🪄 ATK: <span id="atk-val">35</span></span>
-    <span>🗝️ <span id="key-val">0</span></span>
-    <span>⚔️ <span id="kill-val">0</span></span>
-  </div>
-</div>
-
-
-
+    <div id="hud-right">
+      <span id="hud-atk">🪄 ATK: <span id="atk-val">35</span></span>
+      <span>🗝️ <span id="key-val">0</span></span>
+      <span>⚔️ <span id="kill-val">0</span></span>
+    </div>
   </div>
 
   <!-- ══════════════════════════════════════
@@ -44,7 +40,7 @@
   </div>
 
   <!-- ══════════════════════════════════════
-       SCREENS — start / level splash / death / win
+       SCREENS — start / char select / level splash / death / win
        ══════════════════════════════════════ -->
 
   <!-- Start Screen -->
@@ -58,44 +54,44 @@
         <div class="ctrl-row"><kbd>SPACE</kbd><span>Attack</span></div>
         <div class="ctrl-row"><kbd>🗝️</kbd><span>Collect keys to open doors</span></div>
         <div class="ctrl-row"><kbd>🚪</kbd><span>Reach the exit to advance</span></div>
-        <div class="ctrl-row"><kbd>F / X</kbd><span>Ranged attack (shoots right)</span></div>
+        <div class="ctrl-row"><kbd>F / X</kbd><span>Ranged attack (Wizard only)</span></div>
       </div>
       <button onclick="showCharSelect()">Start Game</button>
-
     </div>
   </div>
-  <!-- ── CHARACTER SELECT ── -->
-<div id="char-select-screen" class="screen hidden">
-  <h1>⚔️ Choose Your Hero</h1>
-  <p class="screen-subtitle">Your choice is permanent for this run.</p>
 
-  <div id="char-cards">
+  <!-- Character Select Screen -->
+  <div id="char-select-screen" class="screen hidden">
+    <div class="screen-box">
+      <h1>⚔️ Choose Your Hero</h1>
+      <p class="screen-subtitle">Your choice is permanent for this run.</p>
+      <div id="char-cards">
 
-    <div class="char-card" id="card-wizard" onclick="selectCharacter('wizard')">
-      <div class="char-emoji">🧙</div>
-      <h2>Wizard</h2>
-      <p class="char-desc">Fragile but deadly at range. Fires powerful magic bolts.</p>
-      <ul class="char-stats">
-        <li>❤️ HP &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 80</li>
-        <li>⚔️ Melee &nbsp; 10</li>
-        <li>✨ Ranged &nbsp;25</li>
-      </ul>
+        <div class="char-card" id="card-wizard" onclick="selectCharacter('wizard')">
+          <div class="char-emoji">🧙</div>
+          <h2>Wizard</h2>
+          <p class="char-desc">Fragile but deadly at range. Fires powerful magic bolts.</p>
+          <ul class="char-stats">
+            <li>❤️ HP &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 80</li>
+            <li>⚔️ Melee &nbsp; 10</li>
+            <li>✨ Ranged &nbsp;25</li>
+          </ul>
+        </div>
+
+        <div class="char-card" id="card-warrior" onclick="selectCharacter('warrior')">
+          <div class="char-emoji">🛡️</div>
+          <h2>Warrior</h2>
+          <p class="char-desc">Tough and hard-hitting in melee. Cannot fire projectiles.</p>
+          <ul class="char-stats">
+            <li>❤️ HP &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 150</li>
+            <li>⚔️ Melee &nbsp; 30</li>
+            <li>✨ Ranged &nbsp; —</li>
+          </ul>
+        </div>
+
+      </div>
     </div>
-
-    <div class="char-card" id="card-warrior" onclick="selectCharacter('warrior')">
-      <div class="char-emoji">🛡️</div>
-      <h2>Warrior</h2>
-      <p class="char-desc">Tough and hard-hitting in melee. Cannot fire projectiles.</p>
-      <ul class="char-stats">
-        <li>❤️ HP &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 150</li>
-        <li>⚔️ Melee &nbsp; 30</li>
-        <li>✨ Ranged &nbsp; —</li>
-      </ul>
-    </div>
-
   </div>
-</div>
-
 
   <!-- Level Splash Screen (shown briefly between levels) -->
   <div id="level-screen" class="screen hidden">
@@ -138,5 +134,3 @@
   <script src="game.js"></script>
 </body>
 </html>
-
-
