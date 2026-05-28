@@ -38,8 +38,8 @@ const CHARACTERS = {
     emoji:        '🧙',
     attackDamage: 10,
     rangedDamage: 25,
-    hp:           80,
-    maxHp:        80,
+    hp:           40,
+    maxHp:        40,
     speed:        1,
     description:  'Fragile but deadly at range. Fires powerful magic bolts.',
     colour:       '#c084fc',
@@ -47,10 +47,10 @@ const CHARACTERS = {
   warrior: {
     name:         'Warrior',
     emoji:        '⚔️',
-    attackDamage: 30,
+    attackDamage: 20,
     rangedDamage: 0,
-    hp:           150,
-    maxHp:        150,
+    hp:           120,
+    maxHp:        120,
     speed:        1,
     description:  'Tough and hard-hitting in melee. Cannot fire projectiles.',
     colour:       '#f97316',
@@ -60,7 +60,7 @@ const CHARACTERS = {
 // ════════════════════════════════════════════════════════════
 //  LEVEL DEFINITIONS
 // ════════════════════════════════════════════════════════════
-const LEVELS = [
+const LEVELS = [  
 
   // ══════════════════════════════════════
   //  LEVEL 1 — The Entrance Hall
@@ -358,6 +358,7 @@ document.getElementById('win-btn').addEventListener('click', () => {
 //  SCREEN MANAGEMENT
 // ════════════════════════════════════════════════════════════
 function showCharSelect() {
+  console.log('showCharSelect called from:', new Error().stack);
   document.getElementById('start-screen').classList.add('hidden');
   document.getElementById('gameover-screen').classList.add('hidden');
   document.getElementById('win-screen').classList.add('hidden');
@@ -369,6 +370,7 @@ function showCharSelect() {
 //  SELECT CHARACTER
 // ════════════════════════════════════════════════════════════
 function selectCharacter(type) {
+  console.log('selectCharacter called with:', type);
   state.chosenCharacter = type;
 
   document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
@@ -849,7 +851,6 @@ function fireProjectile() {
     const ny = bolt.y;
 
     if (ny < 0 || ny >= state.map.length ||
-        nx < 0 || nx >= state.map[0].
         nx < 0 || nx >= state.map[0].length) {
       destroyProjectile(bolt);
       return;
@@ -1154,6 +1155,5 @@ function triggerWin() {
 // ════════════════════════════════════════════════════════════
 //  STARTUP
 // ════════════════════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', () => {
-  startScreen.classList.remove('hidden');
-});
+startScreen.classList.remove('hidden');
+

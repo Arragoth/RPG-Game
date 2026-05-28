@@ -11,8 +11,6 @@
 
 /* ════════════════════════════════════════
    PAGE BACKGROUND
-   Change body background to alter the
-   colour surrounding the game viewport.
    ════════════════════════════════════════ */
 body {
   background: #0a0005;
@@ -28,8 +26,6 @@ body {
 
 /* ════════════════════════════════════════
    HUD BAR
-   The top info bar showing HP, gold, etc.
-   Adjust font sizes, colours, and spacing here.
    ════════════════════════════════════════ */
 #hud {
   width: 640px;
@@ -52,14 +48,13 @@ body {
 }
 
 #hud span, #hud-level-label {
-  color: #e8c87a;        /* ← HUD text colour */
+  color: #e8c87a;
   font-size: 13px;
   font-weight: bold;
   letter-spacing: 1px;
   text-shadow: 0 0 6px #a0600088;
 }
 
-/* Health bar container */
 #health-bar-wrap {
   display: flex;
   align-items: center;
@@ -69,7 +64,7 @@ body {
 #health-bar-bg {
   width: 100px;
   height: 12px;
-  background: #3a0000;   /* ← empty health bar colour */
+  background: #3a0000;
   border: 1px solid #8b4513;
   border-radius: 3px;
   overflow: hidden;
@@ -78,16 +73,13 @@ body {
 #health-bar {
   height: 100%;
   width: 100%;
-  background: linear-gradient(90deg, #c0392b, #e74c3c); /* ← health bar fill colour */
+  background: linear-gradient(90deg, #c0392b, #e74c3c);
   border-radius: 3px;
   transition: width 0.2s ease;
 }
 
 /* ════════════════════════════════════════
    GAME VIEWPORT
-   The visible window into the dungeon.
-   Width/height = how many tiles are visible.
-   Each tile is 32×32px, viewport = 20×18 tiles = 640×576px.
    ════════════════════════════════════════ */
 #game-viewport {
   width: 640px;
@@ -97,7 +89,6 @@ body {
   border-top: none;
   border-radius: 0 0 4px 4px;
   position: relative;
-  /* Outer glow effect around the dungeon */
   box-shadow:
     0 0 30px #8b451344,
     0 0 80px #8b451322,
@@ -107,20 +98,14 @@ body {
 
 /* ════════════════════════════════════════
    GAME WORLD
-   This div holds ALL tiles and entities.
-   It is repositioned by JS to scroll/pan
-   the camera to follow the player.
    ════════════════════════════════════════ */
 #game-world {
   position: relative;
   top: 0; left: 0;
-  /* Size is set dynamically by JS based on map size */
 }
 
 /* ════════════════════════════════════════
    TILE BASE
-   All tiles share this base style.
-   Width/height matches TILE_SIZE in game.js (32px).
    ════════════════════════════════════════ */
 .tile {
   position: absolute;
@@ -130,29 +115,19 @@ body {
 
 /* ════════════════════════════════════════
    FLOOR TILE
-   The walkable dungeon floor.
-   ── TO CUSTOMISE ──
-   Change background-color for a different stone colour.
-   Change border colour for grout lines.
    ════════════════════════════════════════ */
 .tile-floor {
-  background-color: #2a2018;   /* ← main floor stone colour */
-  border: 1px solid #1a1208;   /* ← grout line colour */
-  /* Subtle inner texture using box-shadow */
+  background-color: #2a2018;
+  border: 1px solid #1a1208;
   box-shadow: inset 1px 1px 0 #3a3020, inset -1px -1px 0 #1a1008;
 }
 
 /* ════════════════════════════════════════
    WALL TILE
-   Solid dungeon walls.
-   ── TO CUSTOMISE ──
-   Change background for wall stone colour.
-   The gradient gives a 3D chiselled look.
    ════════════════════════════════════════ */
 .tile-wall {
   background: linear-gradient(135deg, #4a3828 0%, #2e2218 50%, #1e1610 100%);
   border: 1px solid #1a1008;
-  /* Top-left highlight for 3D stone feel */
   box-shadow:
     inset 2px 2px 0 #5a4838,
     inset -2px -2px 0 #0e0a06;
@@ -160,8 +135,6 @@ body {
 
 /* ════════════════════════════════════════
    WALL TOP EDGE
-   The top face of a wall (lighter, like
-   looking down at the top of a stone block).
    ════════════════════════════════════════ */
 .tile-wall-top {
   background: linear-gradient(180deg, #6a5040 0%, #4a3828 100%);
@@ -171,14 +144,10 @@ body {
 
 /* ════════════════════════════════════════
    DOOR TILE — LOCKED
-   A locked door requiring a key.
-   ── TO CUSTOMISE ──
-   Change colours, add a border-radius for
-   a rounded arch look, etc.
    ════════════════════════════════════════ */
 .tile-door-locked {
   background: linear-gradient(180deg, #5c3a1e, #3d2510);
-  border: 2px solid #c0850a;   /* ← gold lock border */
+  border: 2px solid #c0850a;
   box-shadow:
     inset 0 0 8px #00000088,
     0 0 6px #c0850a66;
@@ -186,13 +155,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;             /* ← lock emoji size */
+  font-size: 18px;
   cursor: default;
 }
 
 /* ════════════════════════════════════════
    DOOR TILE — OPEN
-   An open door / exit portal.
    ════════════════════════════════════════ */
 .tile-door-open {
   background: radial-gradient(circle, #1a4a6e 0%, #0a1e2e 100%);
@@ -209,7 +177,6 @@ body {
 
 /* ════════════════════════════════════════
    EXIT TILE
-   The level exit staircase.
    ════════════════════════════════════════ */
 .tile-exit {
   background: radial-gradient(circle, #2e1a4e 0%, #0e0818 100%);
@@ -226,7 +193,6 @@ body {
 
 /* ════════════════════════════════════════
    TORCH TILE
-   Wall-mounted torch — purely CSS flame.
    ════════════════════════════════════════ */
 .tile-torch {
   background: transparent;
@@ -235,12 +201,10 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 20px;
-  /* Warm glow cast on surrounding floor */
   filter: drop-shadow(0 0 8px #ff8c0099);
   animation: torchFlicker 1.4s infinite alternate ease-in-out;
 }
 
-/* Torch flicker animation */
 @keyframes torchFlicker {
   0%   { filter: drop-shadow(0 0 6px #ff8c00aa)  brightness(1.0); }
   40%  { filter: drop-shadow(0 0 12px #ffa500cc) brightness(1.1); }
@@ -250,7 +214,6 @@ body {
 
 /* ════════════════════════════════════════
    GOLD COIN PICKUP
-   Collectible gold coins on the floor.
    ════════════════════════════════════════ */
 .tile-gold {
   background: transparent;
@@ -263,14 +226,27 @@ body {
   cursor: default;
 }
 
+.tile-gold::after {
+  content: '';
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff176, #ffe600 40%, #f9a800 100%);
+  border: 2px solid #c47f00;
+  box-shadow:
+    0 0 6px #ffe600cc,
+    0 0 14px #ffe60066,
+    inset 0 1px 2px #fff9c4;
+}
+
 @keyframes coinBob {
-  0%   { transform: translateY(0px);  }
-  100% { transform: translateY(-3px); }
+  0%   { transform: translateY(0px) scale(1.0);   }
+  100% { transform: translateY(-4px) scale(1.05); }
 }
 
 /* ════════════════════════════════════════
    KEY PICKUP
-   Collectible key — unlocks locked doors.
    ════════════════════════════════════════ */
 .tile-key {
   background: transparent;
@@ -289,7 +265,6 @@ body {
 
 /* ════════════════════════════════════════
    HEALTH POTION PICKUP
-   Red potion that restores HP.
    ════════════════════════════════════════ */
 .tile-potion {
   background: transparent;
@@ -308,26 +283,19 @@ body {
 
 /* ════════════════════════════════════════
    PLAYER CHARACTER
-   The hero tile — a CSS-drawn knight.
-   ── TO CUSTOMISE ──
-   Change the emoji, background, border,
-   or swap in a background-image sprite.
    ════════════════════════════════════════ */
 .entity-player {
   position: absolute;
   width: 28px;
   height: 28px;
-  /* Offset to centre within a 32px tile */
   margin: 2px;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
-  /* Blue glow to distinguish player from enemies */
   filter: drop-shadow(0 0 6px #4af);
   transition: left 0.08s linear, top 0.08s linear;
-  /* Attack flash animation (triggered by JS adding .attacking class) */
 }
 
 .entity-player.attacking {
@@ -341,10 +309,7 @@ body {
 }
 
 /* ════════════════════════════════════════
-   ENEMY — SKELETON (Level 1)
-   ── TO CUSTOMISE ──
-   Change the emoji or swap for a
-   background-image sprite sheet.
+   ENEMY — SKELETON
    ════════════════════════════════════════ */
 .entity-enemy-skeleton {
   position: absolute;
@@ -361,7 +326,7 @@ body {
 }
 
 /* ════════════════════════════════════════
-   ENEMY — ORC (Level 2)
+   ENEMY — ORC
    ════════════════════════════════════════ */
 .entity-enemy-orc {
   position: absolute;
@@ -378,7 +343,7 @@ body {
 }
 
 /* ════════════════════════════════════════
-   ENEMY — DEMON (Level 3 boss)
+   ENEMY — DEMON
    ════════════════════════════════════════ */
 .entity-enemy-demon {
   position: absolute;
@@ -402,7 +367,6 @@ body {
 
 /* ════════════════════════════════════════
    ENEMY HEALTH BAR
-   Small red bar above each enemy.
    ════════════════════════════════════════ */
 .enemy-hp-bar-bg {
   position: absolute;
@@ -419,14 +383,13 @@ body {
 
 .enemy-hp-bar {
   height: 100%;
-  background: #e74c3c;   /* ← enemy health bar colour */
+  background: #e74c3c;
   border-radius: 2px;
   transition: width 0.15s ease;
 }
 
 /* ════════════════════════════════════════
    DAMAGE NUMBER POPUP
-   Floating numbers when damage is dealt.
    ════════════════════════════════════════ */
 .dmg-popup {
   position: absolute;
@@ -439,8 +402,8 @@ body {
   text-shadow: 1px 1px 0 #000;
 }
 
-.dmg-popup.player-dmg { color: #e74c3c; }   /* ← player takes damage colour */
-.dmg-popup.enemy-dmg  { color: #f1c40f; }   /* ← enemy takes damage colour */
+.dmg-popup.player-dmg { color: #e74c3c; }
+.dmg-popup.enemy-dmg  { color: #f1c40f; }
 
 @keyframes dmgFloat {
   0%   { opacity: 1; transform: translateY(0px);   }
@@ -461,7 +424,9 @@ body {
   backdrop-filter: blur(4px);
 }
 
-.screen.hidden { display: none; }
+/* ── THE FIX: !important ensures display:none always wins
+      over any ID-level display:flex declarations below ── */
+.screen.hidden { display: none !important; }
 
 .screen-box {
   background: linear-gradient(180deg, #1c0d00, #0e0600);
@@ -481,7 +446,7 @@ body {
 
 .screen-box h1 {
   font-size: 36px;
-  color: #e8c87a;          /* ← screen title colour */
+  color: #e8c87a;
   text-shadow: 0 0 16px #e8c87a66, 2px 2px 0 #5a3000;
   letter-spacing: 4px;
   line-height: 1.2;
@@ -496,7 +461,6 @@ body {
   letter-spacing: 1px;
 }
 
-/* Controls grid on start screen */
 .control-grid {
   margin: 16px 0;
   display: flex;
@@ -544,7 +508,7 @@ kbd {
 /* ════════════════════════════════════════
    BUTTON
    ════════════════════════════════════════ */
-.btn {
+button, .btn {
   margin-top: 20px;
   padding: 12px 36px;
   font-size: 16px;
@@ -560,17 +524,16 @@ kbd {
   transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
 }
 
-.btn:hover {
+button:hover, .btn:hover {
   background: linear-gradient(180deg, #f8e09a, #d8b060);
   transform: scale(1.04);
   box-shadow: 0 0 20px #e8c87a88;
 }
 
-.btn:active { transform: scale(0.97); }
+button:active, .btn:active { transform: scale(0.97); }
 
 /* ════════════════════════════════════════
    CAMERA TRANSITION
-   Smooth fade when moving between levels.
    ════════════════════════════════════════ */
 #game-viewport.fade-out {
   animation: fadeOut 0.4s ease forwards;
@@ -583,58 +546,17 @@ kbd {
   from { opacity: 1; }
   to   { opacity: 0; }
 }
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-/* ════════════════════════════════════════
-   GOLD COIN — BRIGHT YELLOW RESTYLE
-   Changed from emoji to a pure CSS circle
-   so we have full colour control.
-   ── TO CUSTOMISE ──
-   Change background for coin colour.
-   Change box-shadow colour for glow.
-   ════════════════════════════════════════ */
-.tile-gold {
-  background: transparent;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  animation: coinBob 1.2s infinite alternate ease-in-out;
-  cursor: default;
-}
-
-/* The actual coin circle — drawn as a pseudo-element */
-.tile-gold::after {
-  content: '';
-  display: block;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #fff176, #ffe600 40%, #f9a800 100%);
-  border: 2px solid #c47f00;
-  box-shadow:
-    0 0 6px #ffe600cc,
-    0 0 14px #ffe60066,
-    inset 0 1px 2px #fff9c4;
-}
-
-@keyframes coinBob {
-  0%   { transform: translateY(0px) scale(1.0);   }
-  100% { transform: translateY(-4px) scale(1.05); }
-}
 
 /* ════════════════════════════════════════
    PROJECTILE — MAGIC BOLT
-   The ranged attack fired by the player.
-   ── TO CUSTOMISE ──
-   Change background/box-shadow for a
-   different spell colour (e.g. fire = #ff4400)
    ════════════════════════════════════════ */
 .projectile {
-  position: absolute;   /* ← CRITICAL — must be absolute */
+  position: absolute;
   width: 10px;
   height: 10px;
   border-radius: 50%;
@@ -643,11 +565,8 @@ kbd {
   z-index: 15;
   pointer-events: none;
   animation: boltPulse 0.3s infinite alternate;
-  /* ── NO margin here — margin offsets break the tile coordinate math ── */
 }
 
-
-/* Projectile travelling left */
 .projectile.left {
   background: radial-gradient(circle, #ffffff, #c084fc 40%, #7c3aed 100%);
   box-shadow: 0 0 6px #c084fccc, 0 0 14px #7c3aed88;
@@ -660,9 +579,6 @@ kbd {
 
 /* ════════════════════════════════════════
    EQUIPMENT PICKUP TILES
-   Wands and upgrades found in locked rooms.
-   ── TO CUSTOMISE ──
-   Change the glow colour per item tier.
    ════════════════════════════════════════ */
 .tile-equipment {
   background: transparent;
@@ -674,17 +590,14 @@ kbd {
   animation: equipGlow 1.5s infinite alternate ease-in-out;
 }
 
-/* Common item — green glow */
 .tile-equipment.tier-common {
   filter: drop-shadow(0 0 5px #4ade8088);
 }
 
-/* Rare item — blue glow */
 .tile-equipment.tier-rare {
   filter: drop-shadow(0 0 7px #60a5faaa);
 }
 
-/* Epic item — purple glow */
 .tile-equipment.tier-epic {
   filter: drop-shadow(0 0 10px #c084fccc);
 }
@@ -696,8 +609,6 @@ kbd {
 
 /* ════════════════════════════════════════
    EQUIPMENT TOOLTIP
-   Popup shown briefly when player picks
-   up a piece of equipment.
    ════════════════════════════════════════ */
 .equip-tooltip {
   position: absolute;
@@ -719,30 +630,31 @@ kbd {
 .equip-tooltip .equip-bonus { color: #86efac; font-size: 11px; display: block; margin-top: 2px; }
 
 @keyframes tooltipFloat {
-  0%   { opacity: 1; transform: translateY(0px);   }
-  60%  { opacity: 1; transform: translateY(-20px);  }
-  100% { opacity: 0; transform: translateY(-32px);  }
+  0%   { opacity: 1; transform: translateY(0px);  }
+  60%  { opacity: 1; transform: translateY(-20px); }
+  100% { opacity: 0; transform: translateY(-32px); }
 }
 
 /* ════════════════════════════════════════
    HUD — DAMAGE STAT DISPLAY
-   Shows current attack power in the HUD.
    ════════════════════════════════════════ */
 #hud-atk {
-  color: #c084fc;   /* ← attack power HUD colour — purple for magic */
+  color: #c084fc;
   font-size: 13px;
   font-weight: bold;
   letter-spacing: 1px;
   text-shadow: 0 0 6px #7c3aed66;
 }
 
-/* ── CHARACTER SELECT SCREEN ── */
+/* ════════════════════════════════════════
+   CHARACTER SELECT SCREEN
+   ════════════════════════════════════════ */
 #char-select-screen {
-  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 24px;
+  /* NOTE: display is controlled entirely by .screen and .screen.hidden */
 }
 
 #char-cards {
@@ -811,7 +723,7 @@ kbd {
 #hud-character {
   font-size: 0.85rem;
   font-weight: bold;
-  color: #c084fc;        /* wizard purple — swap to #f97316 for warrior */
+  color: #c084fc;
   letter-spacing: 0.05em;
   margin-bottom: 4px;
 }
